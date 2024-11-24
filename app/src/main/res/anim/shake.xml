@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/accelerate_decelerate_interpolator">
+
+    <!-- การสั่นแนวนอน -->
+    <translate
+        android:duration="50"
+        android:fromXDelta="-3%"
+        android:toXDelta="3%"
+        android:repeatCount="6"
+        android:repeatMode="reverse" />
+
+    <!-- การสั่นแนวตั้ง -->
+    <translate
+        android:duration="75"
+        android:fromYDelta="-2%"
+        android:toYDelta="2%"
+        android:repeatCount="4"
+        android:repeatMode="reverse" />
+
+    <!-- การหมุนเล็กน้อย -->
+    <rotate
+        android:duration="50"
+        android:fromDegrees="-3"
+        android:toDegrees="3"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:repeatCount="6"
+        android:repeatMode="reverse" />
+
+    <!-- การเปลี่ยนขนาดเล็กน้อย -->
+    <scale
+        android:duration="100"
+        android:fromXScale="0.98"
+        android:toXScale="1.02"
+        android:fromYScale="0.98"
+        android:toYScale="1.02"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:repeatCount="3"
+        android:repeatMode="reverse" />
+</set>

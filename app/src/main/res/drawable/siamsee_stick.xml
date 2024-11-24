@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- แท่งเซียมซี -->
+    <item>
+        <shape android:shape="rectangle">
+            <size android:width="30dp" android:height="300dp"/>
+            <corners android:radius="2dp"/>
+            <gradient
+                android:startColor="#CD853F"
+                android:endColor="#8B4513"
+                android:angle="45"/>
+        </shape>
+    </item>
+    <!-- ส่วนหัวของแท่งเซียมซี -->
+    <item android:top="0dp" android:bottom="230dp">
+        <shape android:shape="rectangle">
+            <size android:width="8dp" android:height="15dp"/>
+            <corners android:radius="2dp"/>
+            <solid android:color="#DEB887"/>
+        </shape>
+    </item>
+</layer-list>
