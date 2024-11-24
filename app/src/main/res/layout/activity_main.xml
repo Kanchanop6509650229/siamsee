@@ -15,6 +15,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- Guide Container -->
+        <LinearLayout
+            android:id="@+id/guideContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp">
+
+            <TextView
+                android:id="@+id/shakeGuide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shake_guide"
+                android:textSize="20sp"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:padding="16dp" />
+
+            <ImageView
+                android:id="@+id/phoneIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/phone_icon"
+                android:contentDescription="@string/guide_phone_desc"/>
+
+        </LinearLayout>
+
         <ImageView
             android:id="@+id/siamseeStick"
             android:layout_width="wrap_content"

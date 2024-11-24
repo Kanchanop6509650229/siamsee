@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 "ว่าคงจะหายดีดังที่หวัง");
 
         SIAMSEE_MAP.put(2, "ใบที่สองนี้ร้ายอย่าท้อใจ\r\n" + //
-                "เปรียบดังเรือน้อยลอยทวนกระแสไหล\r\n" + //
+                "เปรียบดงเรือน้อยลอยทวนกระแสไหล\r\n" + //
                 "ต้องฝ่าคลื่นลมแรงแข็งขืนไป\r\n" + //
                 "ยากเย็นแสนเข็ญใจในยามนี้\r\n" + //
                 "แม้นจะทำการใดให้ระวัง\r\n" + //
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 "มีแต่คนดีคอยเกื้อหนุน\r\n" + //
                 "ถามลาภผลนั้นว่าจะได้\r\n" + //
                 "ถามการค้าขายว่าเพิ่มพูน\r\n" + //
-                "ถามคู่ครองว่าจะมีผู้อุปถัมภ์\r\n" + //
+                "ถามคู่ครองว่าจะมีผู้อปถัมภ์\r\n" + //
                 "ทุกสิ่งล้วนสมหวังดังตั้งใจ");
 
         SIAMSEE_MAP.put(4, "ใบที่สี่ว่าร้ายอย่าใจร้อน\r\n" + //
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         SIAMSEE_MAP.put(5, "ใบที่ห้าสุขล้ำดั่งน้ำใส\r\n" + //
                 "ไหลเย็นชื่นใจในขุนเขา\r\n" + //
                 "แม้นถามหาลาภผลจะพบเจอ\r\n" + //
-                "ถามการงานเจริญก้าวหน้าไกล\r\n" + //
+                "ถามการงานเจริญก้าวห้าไกล\r\n" + //
                 "มีคนดีมีบุญมาโปรดปราน\r\n" + //
                 "ทั้งการค้าการขายได้กำไร\r\n" + //
                 "ถามคู่ครองว่าจะได้พบใจ\r\n" + //
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 "เหมือนพบขุมทองในป่าใหญ่\r\n" + //
                 "จะทำการสิ่งใดล้วนสำเร็จ\r\n" + //
                 "มีแต่คนเมตตาและช่วยเหลือ\r\n" + //
-                "ถามการค้าว่าจะได้รุ่งเรือง\r\n" + //
+                "ถามการค้าว่าจะได้รุ่งเรือ\r\n" + //
                 "ถามคู่ครองเหมือนเนื้อคู่รอคอย\r\n" + //
                 "ทั้งโรคภัยไข้เจ็บจะคลายหาย\r\n" + //
                 "สมดังหมายทุกประการในคราวนี้");
@@ -197,9 +197,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static final int MAX_POLL_INTERVAL = 1000;
     private static final int MIN_POLL_INTERVAL = 500;
     private static final int SHAKE_THRESHOLD = 15;
-    private static final int MAX_SHAKE_AMPLITUDE = 30; // Maximum expected shake amplitude
-    private static final int MIN_VIBRATION_AMPLITUDE = 1; // Minimum vibration amplitude
-    private static final int MAX_VIBRATION_AMPLITUDE = 255; // Maximum vibration amplitude
+    private static final int MAX_SHAKE_AMPLITUDE = 30;
+    private static final int MIN_VIBRATION_AMPLITUDE = 1;
+    private static final int MAX_VIBRATION_AMPLITUDE = 255;
     private int currentPollInterval = MAX_POLL_INTERVAL;
     private Handler hdr = new Handler();
     private PowerManager.WakeLock wl;
@@ -212,8 +212,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Vibrator vibrator;
     private long lastVibrateTime = 0;
     private boolean isAnimating = false;
-    private static final long VIBRATE_COOLDOWN = 100; // Reduced cooldown for more responsive vibration
-    private static final long RESULT_VIBRATION_DURATION = 1000; // Duration for result vibration
+    private static final long VIBRATE_COOLDOWN = 100;
+    private static final long RESULT_VIBRATION_DURATION = 1000;
+    private TextView shakeGuide;
+    private Animation guideAnimation;
+    private Handler guideHandler = new Handler();
+    private static final long GUIDE_HIDE_DELAY = 500;
+    private static final long GUIDE_SHOW_DELAY = 3000;
+    private boolean isGuideVisible = true;
+    private View guideContainer;
 
     private final Runnable pollTask = new Runnable() {
         public void run() {
@@ -251,12 +258,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
+        guideContainer = findViewById(R.id.guideContainer);
+        shakeGuide = findViewById(R.id.shakeGuide);
         siamseeImage = findViewById(R.id.siamseeImage);
         siamseeStick = findViewById(R.id.siamseeStick);
         shakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake);
         slideOutAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_out);
+        guideAnimation = AnimationUtils.loadAnimation(this, R.anim.guide_animation);
 
         setupAnimationListeners();
+        setupGuideAnimation();
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Sensors Info");
@@ -265,6 +276,37 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // TO DO
     }// end onAccuracyChanged
+
+    private void setupGuideAnimation() {
+        shakeGuide.startAnimation(guideAnimation);
+        ImageView phoneIcon = findViewById(R.id.phoneIcon);
+        Animation phoneShakeAnimation = AnimationUtils.loadAnimation(this, R.anim.phone_shake_guide);
+        phoneIcon.startAnimation(phoneShakeAnimation);
+    }
+
+    private void hideGuide() {
+        if (isGuideVisible) {
+            isGuideVisible = false;
+            guideContainer.animate()
+                    .alpha(0f)
+                    .setDuration(500)
+                    .withEndAction(() -> guideContainer.setVisibility(View.INVISIBLE))
+                    .start();
+        }
+    }
+
+    private void showGuide() {
+        if (!isGuideVisible && !shown_dialog) {
+            isGuideVisible = true;
+            guideContainer.setVisibility(View.VISIBLE);
+            guideContainer.setAlpha(0f);
+            guideContainer.animate()
+                    .alpha(1f)
+                    .setDuration(500)
+                    .withEndAction(this::setupGuideAnimation)
+                    .start();
+        }
+    }
 
     private void setupAnimationListeners() {
         shakeAnimation.setAnimationListener(new Animation.AnimationListener() {
@@ -327,6 +369,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             Math.pow(sensor_info.accZ, 2));
 
             if (acceleration > SHAKE_THRESHOLD) {
+                hideGuide();
+
                 long now = System.currentTimeMillis();
                 if (now - lastVibrateTime > VIBRATE_COOLDOWN) {
                     if (vibrator != null && vibrator.hasVibrator() && !shown_dialog) {
@@ -346,6 +390,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 currentPollInterval = (int) Math.max(
                         MIN_POLL_INTERVAL,
                         MAX_POLL_INTERVAL - (acceleration - SHAKE_THRESHOLD) * 20);
+
+                guideHandler.removeCallbacksAndMessages(null);
+                guideHandler.postDelayed(this::showGuide, GUIDE_SHOW_DELAY);
             } else {
                 currentPollInterval = MAX_POLL_INTERVAL;
             }
