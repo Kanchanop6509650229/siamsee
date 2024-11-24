@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 "ถามการค้าว่าจะได้รุ่งเรือ\r\n" + //
                 "ถามคู่ครองเหมือนเนื้อคู่รอคอย\r\n" + //
                 "ทั้งโรคภัยไข้เจ็บจะคลายหาย\r\n" + //
-                "สมดังหมายทุกประการในคราวนี้");
+                "สมดังหมายทุกประก���รในคราวนี้");
     }
     SensorManager sensorManager;
     private static final int MAX_POLL_INTERVAL = 1000;
@@ -221,6 +221,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static final long GUIDE_SHOW_DELAY = 3000;
     private boolean isGuideVisible = true;
     private View guideContainer;
+    private Animation subtleShakeAnimation;
+    private boolean isSubtleShaking = false;
 
     private final Runnable pollTask = new Runnable() {
         public void run() {
@@ -265,6 +267,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         shakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake);
         slideOutAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_out);
         guideAnimation = AnimationUtils.loadAnimation(this, R.anim.guide_animation);
+        subtleShakeAnimation = AnimationUtils.loadAnimation(this, R.anim.subtle_shake);
+        subtleShakeAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                isSubtleShaking = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
 
         setupAnimationListeners();
         setupGuideAnimation();
@@ -371,6 +386,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if (acceleration > SHAKE_THRESHOLD) {
                 hideGuide();
 
+                // Add subtle shaking animation
+                if (!isSubtleShaking && !shown_dialog) {
+                    isSubtleShaking = true;
+                    siamseeImage.startAnimation(subtleShakeAnimation);
+                }
+                
                 long now = System.currentTimeMillis();
                 if (now - lastVibrateTime > VIBRATE_COOLDOWN) {
                     if (vibrator != null && vibrator.hasVibrator() && !shown_dialog) {
@@ -406,6 +427,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             if (!shown_dialog) {
                 shown_dialog = true;
+                siamseeImage.clearAnimation();
                 siamseeImage.startAnimation(shakeAnimation);
 
                 int randomNumber = (int) (Math.random() * 17) + 1;
@@ -479,6 +501,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             wl.release();
         }
         hdr.removeCallbacks(pollTask);
+        siamseeImage.clearAnimation();
+        isSubtleShaking = false;
     }
 
     static class SensorInfo {
